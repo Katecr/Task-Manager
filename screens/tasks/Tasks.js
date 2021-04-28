@@ -20,6 +20,7 @@ export default function Tasks() {
     const [user, setUser] = useState(null)
     const [tasks, setTasks] = useState([])
     const [loading, setLoading] = useState(false)
+    const [reloadTasks, setReloadTasks] = useState(false)
 
     useEffect(() => {
         setUser(getCurrentUser())
@@ -32,14 +33,15 @@ export default function Tasks() {
                 const response = await getTask()
                 if (response.statusResponse) {
                     setTasks(response.tasks)
+                    setReloadTasks(false)
                 }
                 setLoading(false)
             })()
-        }, [])
+        }, [reloadTasks])
     )
 
     return (
-        <ScrollView >
+        <ScrollView>
             {
                 user && (
                     <View>
@@ -71,6 +73,7 @@ export default function Tasks() {
                             navigation={navigation}
                             toastRef={toastRef}
                             setLoading={setLoading}
+                            setReloadTasks={setReloadTasks}
                         />
                     ) : (
                         <View style={styles.notFoundView}>
@@ -79,14 +82,13 @@ export default function Tasks() {
                     )
                 }
             </View>
-            <Toast ref={toastRef} position="center" opacity={0.9}/>
+            <Toast ref={toastRef} position="top" opacity={0.9}/>
             <Loading isVisible={loading} text="Cargando tareas..."/>
         </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
-   
     notFoundView: {
         flex: 1,
         justifyContent: "center",

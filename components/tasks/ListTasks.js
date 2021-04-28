@@ -3,8 +3,9 @@ import { FlatList, StyleSheet, Text, View, TouchableOpacity, Alert } from 'react
 import { size } from 'lodash'
 import { Button, Icon } from 'react-native-elements'
 
+import { deleteTask } from '../../utils/actions'
 
-export default function ListTasks({tasks, navigation, toastRef, setLoading}) {
+export default function ListTasks({tasks, navigation, toastRef, setLoading, setReloadTasks}) {
    
 
     return (
@@ -14,14 +15,14 @@ export default function ListTasks({tasks, navigation, toastRef, setLoading}) {
                 keyExtractor={(item, index) => index.toString()}
                 onEndReachedThreshold={0.5}
                 renderItem={(task) => (
-                    <Task task={task} navigation={navigation} toastRef={toastRef} setLoading={setLoading}  />
+                    <Task task={task} navigation={navigation} toastRef={toastRef} setLoading={setLoading} setReloadTasks={setReloadTasks}  />
                 )}
             />
         </View>
     )
 }
 
-function Task({task, navigation, toastRef, setLoading}){
+function Task({task, navigation, toastRef, setLoading, setReloadTasks}){
 
     const { descriptionTask, id } = task.item
     
@@ -34,19 +35,20 @@ function Task({task, navigation, toastRef, setLoading}){
         setLoading(true)
         const responseDeleteDocument = await deleteTask(descriptionTask)
         setLoading(false)
-        if(!responseDeleteDocument.statusResponse){
+        if(responseDeleteDocument.statusResponse){
+            setReloadTasks(true)
+            toastRef.current.show("Tarea eliminada", 3000)
+        }else{
             toastRef.current.show("Error al eliminar una tarea, por favor intenta más tarde", 3000)
             return
         }
-
-        navigation.navigate("tasks")
-
+        
     } 
 
     const removeTask = () => {
         Alert.alert(
             "Completar tarea",
-            "¿Estas seguro que deseas marcar como completado?",
+            "¿Estas seguro que deseas marcar como completado?, realizar esta acción eliminará de la lista la tarea seleccionada.",
             [
                 {
                     text:"Cancelar",
