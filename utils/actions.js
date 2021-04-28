@@ -51,3 +51,33 @@ export const addDocumentWithoutId = async(collection, data) => {
     }
     return result     
 }
+
+export const updateDocument = async(collection, id, data) => {
+    const result = { statusResponse: true, error: null }
+    try {
+        await db.collection(collection).doc(id).update(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
+export const deleteTask = async(nameTask) => {
+    const result = { statusResponse: true, error: null }
+    try {
+        const response = await db
+            .collection("Tasks")
+            .where("descriptionTask", "==", nameTask)
+            .where("idUser", "==", getCurrentUser().uid)
+            .get()
+        response.forEach(async(doc) => {
+            const taskId = doc.id
+            await db.collection("Tasks").doc(taskId).delete()
+        })    
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
