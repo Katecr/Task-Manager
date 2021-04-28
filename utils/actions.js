@@ -21,3 +21,33 @@ export const loginWithEmailAndPassword = async(email, password) => {
     }
     return result
 }
+
+export const getTask = async() => {
+    const result = { statusResponse: true, error: null, tasks: [] }
+    try {
+        const response = await db
+            .collection("Tasks")
+            .where("idUser", "==", getCurrentUser().uid)
+            .get()
+            response.forEach((doc) => {
+                const task = doc.data()
+                task.id = doc.id
+                result.tasks.push(task)
+            })
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
+export const addDocumentWithoutId = async(collection, data) => {
+    const result = { statusResponse: true, error: null }
+    try {
+        await db.collection(collection).add(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
