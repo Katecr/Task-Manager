@@ -18,6 +18,7 @@ The libraries used in this project are, or simply when cloning using yarn downlo
 4. Navigation Stack
 5. React native elements
 6. Key Board Aware Scroll View
+7. Firebase
 
 ## Preview
 This is a preview of the simple app functionality
